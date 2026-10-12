@@ -105,14 +105,35 @@ A javasolt rendszer backendje a python alapú FastAPI keretrendszer, amely JSON-
 | Adatbázis-elérés | SQLAlchemy | Típusos ORM-leképezés mű/kiadás/példány entitásokhoz | Az entitásmodell véglegesítése előtt pontosítani kell a kapcsolatokat |
 | Adattárolás | PostgreSQL | Relációs tárolás a mű–kiadás–példány modellhez | Helyi fejlesztéshez Docker Compose-ban futtatva |
 | Borítófelismerés | Vision LLM | Egy hívásban kezeli a stilizált borítószöveget, nem igényel külön OCR-lépést | Validálni kell OCR-alapú baseline-nal szemben |
+| ISBN-vonalkód beolvasás | CameraX + ML Kit Barcode Scanning | Eszközön, hálózat nélkül fut | A rossz fényviszony és a sérült vonalkód rontja a találati arányt |
+| Külső könyvadatforrás | Google Books API és Open Library, httpx és tenacity | Két független forrás, aszinkron hívás és újrapróbálás átmeneti hiba esetén | A magyar kiadványok lefedettsége, a lekérdezési korlátok és a felhasználási feltételek még vizsgálandók |
+| Tesztelés | pytest, respx | Az ISBN-validáció, a duplikációkezelés és az egyeztetés tesztelhető rögzített szolgáltatásválaszokkal | A mérésekhez külön, ellenőrzött mintakönyv-készlet és tesztfotók kellenek |
+| Futtatás | Docker Compose | Egy paranccsal indítható backend és adatbázis | A webes kliens kiszolgálásának módja még eldöntendő |
 
 ### Kezdeti architektúravázlat
 
 ```mermaid
 flowchart LR
-  M[Jetpack Compose mobil app] --> F[FastAPI backend]
-  W[Angular web kliens] --> F
-  F --> D[(PostgreSQL)]
+  subgraph Kliensek
+    M["Jetpack Compose mobil app<br/>(CameraX + ML Kit)"]
+    W["Angular web kliens"]
+  end
+
+  subgraph Docker Compose
+    F["FastAPI backend"]
+    D[("PostgreSQL")]
+  end
+
+  subgraph Külső szolgáltatások
+    B["Google Books / Open Library"]
+    L["Vision LLM"]
+  end
+
+  M -->|"ISBN, borítófotó, kézi adat"| F
+  W -->|"gyűjtemény kezelése"| F
+  F --> D
+  F -->|"httpx + tenacity"| B
+  F -->|"borítófotó"| L
 ```
 
 ### Megvalósíthatóság és technikai kockázatok
