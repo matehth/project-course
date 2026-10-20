@@ -26,8 +26,7 @@ Projektazonosító: 2026-SD-01
 - Nagy könyvgyűjteménnyel rendelkezők
 - Otthoni felhasználás
 - Egy felhasználó, egy gyűjtemény
-- Könyvek rendszerezése
-- Helyi hálózaton futó rendszer
+- Gyors nyilvántartás és visszakereshetőség
 
 ---
 
@@ -38,6 +37,15 @@ Projektazonosító: 2026-SD-01
 - MI-alapú adatkinyerés a borítófotóból
 - Tárolás saját adatbázisban
 - Kereshető, szűrhető, szerkeszthető webes gyűjteménynézet
+
+<!-- @scale 60% -->
+```mermaid
+flowchart LR
+  M[Mobilalkalmazás] --> B[Backend és adatbázis]
+  W[Webes gyűjteménynézet] --> B
+  B --> K[Nyilvános könyvadatforrás]
+  B --> A[MI-szolgáltatás]
+```
 
 ---
 
